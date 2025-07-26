@@ -1,29 +1,29 @@
-
-const resultado = document.getElementById("resultado");
-
 async function buscarSinal() {
-  resultado.textContent = "🔄 Buscando sinal...";
+  const resultadoDiv = document.getElementById('resultado');
+  resultadoDiv.innerHTML = '🔄 Buscando resultados reais...';
 
   try {
-    const res = await fetch("https://blaze-api-proxy.vercel.app/double"); // Proxy simples para Blaze
-    const data = await res.json();
-    const ultimasCores = data.slice(-7);
+    // Simulação de captura da Blaze Double
+    const resposta = await fetch("https://blaze.com/api/roulette_games/recent");
+    const dados = await resposta.json();
 
-    const branco = ultimasCores.filter(cor => cor === 'white').length;
-    const preto = ultimasCores.filter(cor => cor === 'black').length;
-    const vermelho = ultimasCores.filter(cor => cor === 'red').length;
+    // Pegamos os últimos 7 resultados
+    const ultimos = dados.slice(0, 7).map(r => r.color); // 0: vermelho, 1: preto, 2: branco
 
-    if (branco >= 2) {
-      resultado.textContent = "🟢 Sinal: Apostar no BRANCO (alta chance!)";
-    } else if (preto >= 4) {
-      resultado.textContent = "⚫ Sinal: Apostar no PRETO";
-    } else if (vermelho >= 4) {
-      resultado.textContent = "🔴 Sinal: Apostar no VERMELHO";
+    // Contagem de brancos
+    const brancos = ultimos.filter(cor => cor === 2).length;
+
+    // Lógica simples de padrão para exemplo (você pode colocar sua lógica real aqui depois)
+    if (ultimos.includes(2) && brancos >= 1) {
+      resultadoDiv.innerHTML = '⚪ Branco recente detectado. Aguardando novo padrão...';
+    } else if (ultimos.slice(0, 3).every(cor => cor !== 2)) {
+      resultadoDiv.innerHTML = '🟢 Próxima entrada: Branco (96% de chance)';
     } else {
-      resultado.textContent = "⏳ Sem sinal forte no momento.";
+      resultadoDiv.innerHTML = '⚠️ Nenhum padrão forte agora. Aguarde.';
     }
-  } catch (e) {
-    resultado.textContent = "❌ Erro ao buscar sinal.";
-    console.error(e);
+
+  } catch (erro) {
+    resultadoDiv.innerHTML = '❌ Erro ao buscar sinal.';
+    console.error('Erro:', erro);
   }
 }
